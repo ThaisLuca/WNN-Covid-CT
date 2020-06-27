@@ -49,20 +49,6 @@ def main():
 	#Load images in CSV file
 	train_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH + params.TRAIN_DATASET)).sample(frac=1)
 
-def preprocess(df, threshold):
-	columns = df.columns
-	for column in columns:
-		df[column] = np.where(df[column] >= threshold, 1, 0)
-	return df
-
-	#img = cv2.imread(a[0])
-	#median = cv2.medianBlur(img, 5)
-	#compare = np.concatenate((img, median), axis=1)
-
-	#cv2.imshow('img', compare)
-	#cv2.waitKey(0)
-	#cv2.destroyAllWindows
-
 	addressSizes = [10, 15, 20, 25, 30, 35, 40, 45, 50]
 
 	for addressSize in addressSizes:

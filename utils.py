@@ -34,6 +34,12 @@ def pre_process_images(images_path):
 	return load_all_images_grayscale(images_path)
 	#return apply_gaussian_blur(apply_median_blur(images))
 
+def apply_threshold(df, threshold):
+	columns = df.columns
+	for column in columns:
+		df[column] = np.where(df[column] >= threshold, 1, 0)
+	return df
+
 def create_row(array, label, keys):
 	dict_ = {}
 	for px, key in zip(array, keys):
