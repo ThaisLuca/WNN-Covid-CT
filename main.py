@@ -1,6 +1,7 @@
 
 import params as params
 import utils as utils
+import pandas as pd
 
 import wisardpkg as wp
 import numpy as np
@@ -36,42 +37,27 @@ def network(train, validation, test, addressSize, verbose=True, ignoreZero=False
 
 	return accuracy_score(y_train, out_train), accuracy_score(y_val, out_val), accuracy_score(y_test, out_test)
 
+
+
 def main():
 
 	if(not path.exists(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH)):
 		# Pre-Process images and save for later
 		os.makedirs(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH)
+		utils.create_csv_files()
 
-		#Training dataset pre-process
-		print('Training data set')
-		train_set = utils.get_files_path(file=params.COVID_TRAINING_DATASET, path=params.COVID_IMAGES_PROCESSED_PATH)
-		train_set += utils.get_files_path(file=params.NON_COVID_TRAINING_DATASET, path=params.NON_COVID_IMAGES_PROCESSED_PATH)
-		print('Pre-processing all images..')
-		images_processed = utils.pre_process_images(train_set)
-		print("{} images processed".format(len(images_processed)))
-		print('Saving images..')
-		utils.save_images_as_csv(images_processed, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.TRAIN_DATASET) 
+	else:
+		#Load images in CSV file
+		train_set = pd.read_csv(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH + params.TRAIN_DATASET)
+		print(train_set.shape)
+		
 
+def preprocess(df, threshold):
+	columns = df.columns
+	for column in columns:
+		df[column] = np.where(df[column] >= threshold, 1, 0)
+	return df
 
-		#Validation dataset pre-process
-		print('Validation data set')
-		val_set = utils.get_files_path(file=params.COVID_VALIDATION_DATASET, path=params.COVID_IMAGES_PROCESSED_PATH)
-		val_set += utils.get_files_path(file=params.NON_COVID_VALIDATION_DATASET, path=params.NON_COVID_IMAGES_PROCESSED_PATH)
-		print('Pre-processing all images..')
-		images_processed = utils.pre_process_images(val_set)
-		print("{} images processed".format(len(images_processed)))
-		print('Saving images..')
-		utils.save_images_as_csv(images_processed, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.VALIDATION_DATASET)
-
-		#Test dataset pre-process
-		print('Test data set')
-		test_set = utils.get_files_path(file=params.COVID_TEST_DATASET, path=params.COVID_IMAGES_PROCESSED_PATH)
-		test_set += utils.get_files_path(file=params.NON_COVID_TEST_DATASET, path=params.NON_COVID_IMAGES_PROCESSED_PATH)
-		print('Pre-processing all images..')
-		images_processed = utils.pre_process_images(val_set)
-		print("{} images processed".format(len(images_processed)))
-		print('Saving images..')
-		utils.save_images_as_csv(images_processed, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.TEST_DATASET) 
 	return
 
 	#img = cv2.imread(a[0])
