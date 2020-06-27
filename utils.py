@@ -14,7 +14,8 @@ def get_files_path(file, path):
 def load_all_images_grayscale(images_path):
 	images = []
 	for path in images_path:
-		images.append(cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY))
+		image = cv2.resize(cv2.imread(path), params.DIM, interpolation=cv2.INTER_NEAREST)
+		images.append(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
 	return images
 
 def apply_median_blur(images):
@@ -30,23 +31,31 @@ def apply_gaussian_blur(images):
 	return blury_images
 
 def pre_process_images(images_path):
-	return apply_gaussian_blur(apply_median_blur(load_all_images_grayscale(images_path)))
+	return load_all_images_grayscale(images_path)
+	#return apply_gaussian_blur(apply_median_blur(images))
+
+def create_row(array, label, keys):
+	dict_ = {}
+	for px, key in zip(array, keys):
+		dict_[key] = px
+	dict_['target'] = label
+	return dict_ 
 
 def save_images_as_csv(images, n_true_labels, path, filename):
-	data, target = [], []
+	columns = [i for i in range(params.DIM[0] * params.DIM[1])]
+	columns.append('target')
+
+	data = pd.DataFrame([], columns=columns)
 	label = 1
-	df= pd.DataFrame()
 	for image in images:
 		img_array = (image.flatten())
 		img_array = img_array.reshape(-1,1).T
-		data.append(img_array)
-		target.append(label)
+		row = create_row(img_array[0], label, columns)
+		data = data.append(row, ignore_index=True)
 
-		if(len(data) == n_true_labels): label = 0 
-	df['data'] = data
-	df['label'] = target
+		if(data.shape[0] == n_true_labels): label = 0 
 
-	df.to_csv(os.getcwd() + path + filename, index=False)
+	data.to_csv(os.getcwd() + path + filename, index=False)
 	print('Images saved as CSV\n')
 
 def create_csv_files():
@@ -62,7 +71,6 @@ def create_csv_files():
 	print("{} images processed".format(len(images_processed)))
 	print('Saving images..')
 	save_images_as_csv(images_processed, n_true_values, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.TRAIN_DATASET) 
-
 
 	#Validation dataset pre-process
 	print('Validation data set')
@@ -91,10 +99,13 @@ def create_csv_files():
 def visualize_filters(image):
 	img = cv2.imread(image)
 	median = cv2.GaussianBlur(cv2.medianBlur(img, 5), (5,5), 0)
-	compare = np.concatenate((img, median), axis=1)
+	#compare = np.concatenate((img, median), axis=1)
+	median = cv2.resize(median, params.DIM, interpolation=cv2.INTER_NEAREST)
 
-	cv2.imshow('img', compare)
+	cv2.imshow('img', median)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows
 
 	return
+
+#visualize_filters(os.getcwd() + '/resources/Images-processed/CT_COVID/2020.01.24.919183-p27-132.png')

@@ -46,10 +46,25 @@ def main():
 		os.makedirs(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH)
 		utils.create_csv_files()
 
-	else:
-		#Load images in CSV file
-		train_set = pd.read_csv(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH + params.TRAIN_DATASET)
-		print(train_set.shape)
+	#Load images in CSV file
+	train_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH + params.TRAIN_DATASET)).sample(frac=1)
+	print(train_set[train_set['target'] == 1].shape, train_set[train_set['target'] == 0].shape)
+
+	#Define model
+	wsd = wp.Wisard(20, ignoreZero=True, verbose=False)
+	X = preprocess(train_set.drop(['target'], axis=1), 125).values.tolist()
+	Y = train_set['target'].values.tolist()
+	Y = [str(y) for y in Y]
+	
+
+	print("Training\n")
+	# train using the input data
+	wsd.train(X,Y)
+
+	# classify train data
+	out_train = wsd.classify(X)
+
+	print(accuracy_score(Y, out_train))
 		
 
 def preprocess(df, threshold):
@@ -57,8 +72,6 @@ def preprocess(df, threshold):
 	for column in columns:
 		df[column] = np.where(df[column] >= threshold, 1, 0)
 	return df
-
-	return
 
 	#img = cv2.imread(a[0])
 	#median = cv2.medianBlur(img, 5)

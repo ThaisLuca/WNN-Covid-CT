@@ -20,3 +20,6 @@ PRE_PROCESSED_FOLDER_PATH = '/resources/pre-processed'
 TRAIN_DATASET = '/train_dataset.csv'
 VALIDATION_DATASET = '/validation_dataset.csv'
 TEST_DATASET = '/test_dataset.csv'
+
+#Images Dimensions
+DIM = (300,200)
