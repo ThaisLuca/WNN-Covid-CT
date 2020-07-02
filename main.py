@@ -5,17 +5,12 @@ import pandas as pd
 
 import wisardpkg as wp
 import numpy as np
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score, auc
 
 from os import path
 import sys, os
 
-def network(train, validation, test, addressSize, verbose=True, ignoreZero=False):
-	best_model = 0
-	best_model_accuracy = 0
-
-	x_train, x_validation, x_test = train['data'], validation['data'], test['data']
-	y_train, y_validation, y_test = train['target'], validation['target'], test['target']
+def network(X, y, addressSize, ignoreZero=False, verbose=True):
 
 	#Define model
 	wsd = wp.Wisard(addressSize=addressSize, ignoreZero=ignoreZero, verbose=verbose)
@@ -25,17 +20,13 @@ def network(train, validation, test, addressSize, verbose=True, ignoreZero=False
 	wsd.train(X,y)
 
 	# classify train data
-	out_train = wsd.classify(x_train)
+	out = wsd.classify(X)
 
-	print("Validation\n")
-	# classify validation data
-	out_val = wsd.classify(x_validation)
+	print("Accuracy score: {}".format(accuracy_score(y, out)))
+	print("F1-Score: {}".format(f1_score(y, out)))
+	print("AUC: {}".format(auc(y, out)))
 
-	#classify test data
-	print("Test\n")
-	out_test = wsd.classify(x_test)
-
-	return accuracy_score(y_train, out_train), accuracy_score(y_val, out_val), accuracy_score(y_test, out_test)
+	#return wsd.json()
 
 
 
@@ -49,7 +40,12 @@ def main():
 	#Load images in CSV file
 	train_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_FOLDER_PATH + params.TRAIN_DATASET)).sample(frac=1)
 
-	addressSizes = [10, 15, 20, 25, 30, 35, 40, 45, 50]
+	X = train_set.drop(['target'], axis=1).values.tolist()
+	Y = train_set['target'].values.tolist()
+	Y = [str(y) for y in Y]
+	del train_set
+
+	addressSizes = [20, 25, 30, 35, 40, 45, 50]
 
 	for addressSize in addressSizes:
 		print("Current address size is {}".format(addressSize))

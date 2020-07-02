@@ -31,8 +31,8 @@ def apply_gaussian_blur(images):
 	return blury_images
 
 def pre_process_images(images_path):
-	return load_all_images_grayscale(images_path)
-	#return apply_gaussian_blur(apply_median_blur(images))
+	#return load_all_images_grayscale(images_path)
+	return apply_gaussian_blur(apply_median_blur(load_all_images_grayscale(images_path)))
 
 def apply_threshold(df, threshold):
 	columns = df.columns
@@ -61,6 +61,7 @@ def save_images_as_csv(images, n_true_labels, path, filename):
 
 		if(data.shape[0] == n_true_labels): label = 0 
 
+	data = apply_threshold(data, params.THRESHOLD)
 	data.to_csv(os.getcwd() + path + filename, index=False)
 	print('Images saved as CSV\n')
 
@@ -113,5 +114,3 @@ def visualize_filters(image):
 	cv2.destroyAllWindows
 
 	return
-
-#visualize_filters(os.getcwd() + '/resources/Images-processed/CT_COVID/2020.01.24.919183-p27-132.png')

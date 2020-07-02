@@ -23,3 +23,4 @@ TEST_DATASET = '/test_dataset.csv'
 
 #Images Dimensions
 DIM = (300,200)
+THRESHOLD = 125
