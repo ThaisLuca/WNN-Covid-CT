@@ -41,6 +41,7 @@ def pre_process_images(images):
 def apply_threshold(df):
 	columns = df.columns
 	for column in columns:
+		print(column)
 		if(column == 'target'): continue
 		df[column] = np.where(df[column] == 255, '1', '0')
 	return df
@@ -55,6 +56,8 @@ def create_row(array, label, keys):
 def save_images_as_csv(images, n_true_labels, path, filename):
 	columns = [i for i in range(params.DIM[0] * params.DIM[1])]
 	columns.append('target')
+	print("{} columns created.".format(len(columns)))
+	n_images = len(images)
 
 	data = pd.DataFrame([], columns=columns)
 	label = '1'
@@ -63,10 +66,11 @@ def save_images_as_csv(images, n_true_labels, path, filename):
 		img_array = img_array.reshape(-1,1).T
 		row = create_row(img_array[0], label, columns)
 		data = data.append(row, ignore_index=True)
+		print("{}\{} saved to CSV file".format(data.shape[0], n_images))
 
 		if(data.shape[0] == n_true_labels): label = '0'
 
-	apply_threshold(data)
+	data = apply_threshold(data)
 	data.to_csv(os.getcwd() + path + filename, index=False)
 	print('Images saved as CSV\n')
 
