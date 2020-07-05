@@ -139,4 +139,7 @@ dmypy.json
 # Ignore resources folder
 /resources
 
+# Ignore Jupyter notebooks
+.ipynb
+
 # End of https://www.toptal.com/developers/gitignore/api/python
