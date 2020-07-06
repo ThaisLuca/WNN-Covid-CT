@@ -128,4 +128,4 @@ def visualize_filters(image_path):
 
 	return
 
-#visualize_filters('foto.png')
+#visualize_filters('resources/foto.png')
