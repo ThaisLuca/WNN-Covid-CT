@@ -136,9 +136,6 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# Ignore resources folder
-/resources
-
 # Ignore Jupyter notebooks
 *.ipynb
 
