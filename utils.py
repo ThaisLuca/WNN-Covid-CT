@@ -41,7 +41,6 @@ def pre_process_images(images):
 def apply_threshold(df):
 	columns = df.columns
 	for column in columns:
-		print(column)
 		if(column == 'target'): continue
 		df[column] = np.where(df[column] == 255, '1', '0')
 	return df
