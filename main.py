@@ -29,7 +29,7 @@ def main():
 	y, y_val = [str(i) for i in y], [str(y_v) for y_v in y_val]
 	del train_set, val_set
 
-	addressSizes = [20, 25, 30, 35, 40, 45, 50]
+	addressSizes = [20, 25, 30, 35, 40, 45, 50, 55, 60, 64]
 
 	for addressSize in addressSizes:
 		print("Current address size is {}\n".format(addressSize))

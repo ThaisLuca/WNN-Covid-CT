@@ -5,6 +5,48 @@ import numpy as np
 import sys, os
 import cv2
 
+import skimage.io
+from skimage.filters import threshold_otsu, threshold_niblack, threshold_sauvola
+
+import matplotlib
+import matplotlib.pyplot as plt
+
+def visualize_filters_skimage_filters(images_path):
+	image = skimage.io.imread(fname=images_path)
+	image = skimage.color.rgb2gray(image)
+	binary_global = image > threshold_otsu(image)
+
+	window_size = 25
+	thresh_niblack = threshold_niblack(image, window_size=window_size, k=0.8)
+	thresh_savoula = threshold_sauvola(image, window_size=window_size)
+
+	binary_niblack = image > threshold_niblack
+	binary_savoula = image > threshold_sauvola
+
+	plt.figure(figsize=(8,7))
+	plt.subplot(2,2,1)
+	plt.imshow(image, cmap=plt.cm.gray)
+	plt.title('Original')
+	plt.axis('off')
+
+	plt.subplot(2,2,2)
+	plt.title('Global Threshold')
+	plt.imshow(binary_global, cmap=plt.cm.gray)
+	plt.axis('off')
+
+	plt.subplot(2,2,3)
+	plt.imshow(binary_niblack, cmap=plt.cm.gray)
+	plt.title('Niblack Threshold')
+	plt.axis('off')
+
+	plt.subplot(2,2,4)
+	plt.imshow(binary_savoula, cmap=plt.cm.gray)
+	plt.title('Savoula Threshold')
+	plt.axis('off')
+
+	plt.show()
+
+
 def get_files_path(file, path):
 	with open(os.getcwd() + file) as f:
 		content = f.readlines()
@@ -34,7 +76,8 @@ def pre_process_images(images):
 	n_images = len(images)
 	for image in images:
 		image = cv2.cvtColor(cv2.resize(image, params.DIM, interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2GRAY)
-		ret, thresh1 = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+		#ret, thresh1 = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+		thresh1 = cv2.Canny(image, 100, 200)
 		pp_images.append(thresh1)	
 	return pp_images
 
@@ -114,18 +157,39 @@ def create_csv_files():
 	print('Saving images..')
 	save_images_as_csv(images_processed, n_true_values, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.TEST_DATASET)
 
-def visualize_filters(image_path):
+def visualize_filters_opencv_filters(image_path):
 	img = cv2.imread(image_path)
 
 	img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	ret, thresh1 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-	ret, thresh2 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-	compare = np.concatenate((thresh1, thresh2), axis=1)
+	#ret, thresh1 = cv2.adaptiveThreshold(img, 0, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11,2)
+	#ret, thresh2 = cv2.adaptiveThreshold(img, 0, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11,2)
+	ret, thresh1 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	edges_1 = cv2.Canny(img, 100, 200)
+	edges_2 = cv2.Canny(img, 300, 200)
 
-	cv2.imshow('img', compare)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows
+	plt.figure(figsize=(5,5))
+	plt.subplot(2,2,1)
+	plt.imshow(img, cmap=plt.cm.gray)
+	plt.title('Original')
+	plt.axis('off')
+
+	plt.subplot(2,2,2)
+	plt.title('Otsu Threshold')
+	plt.imshow(thresh1, cmap=plt.cm.gray)
+	plt.axis('off')
+
+	plt.subplot(2,2,3)
+	plt.title('Canny Edge Detector 100x200')
+	plt.imshow(edges_1, cmap=plt.cm.gray)
+	plt.axis('off')
+
+	plt.subplot(2,2,4)
+	plt.title('Canny Edge Detector 300x200')
+	plt.imshow(edges_2, cmap=plt.cm.gray)
+	plt.axis('off')
+
+	plt.show()
 
 	return
 
-#visualize_filters('resources/foto.png')
+#visualize_filters_opencv_filters('resources/foto.png')

@@ -21,6 +21,10 @@ TRAIN_DATASET = '/train_dataset.csv'
 VALIDATION_DATASET = '/validation_dataset.csv'
 TEST_DATASET = '/test_dataset.csv'
 
+#Binarization Techniques
+OTSU_THRESHOLD = 'otsu_threshold'
+CANNY_DETECTOR = 'canny_detector'
+
 #Images Dimensions
 DIM = (300,200)
 THRESHOLD = 125
