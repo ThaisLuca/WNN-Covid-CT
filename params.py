@@ -14,7 +14,11 @@ COVID_IMAGES_PROCESSED_PATH = '/resources/Images-processed/CT_COVID/'
 NON_COVID_IMAGES_PROCESSED_PATH = '/resources/Images-processed/CT_NonCOVID/'
 
 #Path to save pre-processed images
-PRE_PROCESSED_FOLDER_PATH = '/resources/pre-processed'
+PRE_PROCESSED_OTSU_FOLDER_PATH = '/resources/pre-processed_otsu_threshold'
+PRE_PROCESSED_CANNY_FOLDER_PATH = '/resources/pre-processed_canny_edge'
+
+# Results folder
+RESULTS_FOLDER_PATH = '/results'
 
 #CSV files
 TRAIN_DATASET = '/train_dataset.csv'

@@ -71,13 +71,16 @@ def apply_gaussian_blur(images):
 		blury_images.append(cv2.GaussianBlur(image, (5,5), 0))
 	return blury_images
 
-def pre_process_images(images):
+def pre_process_images(images, pre_processing_technique):
 	pp_images = []
 	n_images = len(images)
 	for image in images:
 		image = cv2.cvtColor(cv2.resize(image, params.DIM, interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2GRAY)
-		#ret, thresh1 = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-		thresh1 = cv2.Canny(image, 100, 200)
+
+		if(pre_processing_technique == params.OTSU_THRESHOLD):
+			ret, thresh1 = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+		else:
+			thresh1 = cv2.Canny(image, 100, 200)
 		pp_images.append(thresh1)	
 	return pp_images
 
@@ -116,7 +119,9 @@ def save_images_as_csv(images, n_true_labels, path, filename):
 	data.to_csv(os.getcwd() + path + filename, index=False)
 	print('Images saved as CSV\n')
 
-def create_csv_files():
+def create_csv_files(pre_processing_technique):
+
+	folder = params.PRE_PROCESSED_OTSU_FOLDER_PATH if pre_processing_technique == params.OTSU_THRESHOLD else params.PRE_PROCESSED_CANNY_FOLDER_PATH
 
 	#Training dataset pre-process
 	print('Training data set')
@@ -126,10 +131,10 @@ def create_csv_files():
 	train_set += get_files_path(file=params.NON_COVID_TRAINING_DATASET, path=params.NON_COVID_IMAGES_PROCESSED_PATH)
 	images = load_all_images(train_set)
 	print('Pre-processing all images..')
-	images_processed = pre_process_images(images)
+	images_processed = pre_process_images(images, pre_processing_technique)
 	print("{} images processed".format(images_processed))
 	print('Saving images..')
-	save_images_as_csv(images_processed, n_true_values, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.TRAIN_DATASET) 
+	save_images_as_csv(images_processed, n_true_values, path=folder, filename=params.TRAIN_DATASET) 
 
 	#Validation dataset pre-process
 	print('Validation data set')
@@ -139,10 +144,10 @@ def create_csv_files():
 	val_set += get_files_path(file=params.NON_COVID_VALIDATION_DATASET, path=params.NON_COVID_IMAGES_PROCESSED_PATH)
 	images = load_all_images(val_set)
 	print('Pre-processing all images..')
-	images_processed = pre_process_images(images)
+	images_processed = pre_process_images(images, pre_processing_technique)
 	print("{} images processed".format(len(images_processed)))
 	print('Saving images..')
-	save_images_as_csv(images_processed, n_true_values, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.VALIDATION_DATASET)
+	save_images_as_csv(images_processed, n_true_values, path=folder, filename=params.VALIDATION_DATASET)
 
 	#Test dataset pre-process
 	print('Test data set')
@@ -152,10 +157,34 @@ def create_csv_files():
 	test_set += get_files_path(file=params.NON_COVID_TEST_DATASET, path=params.NON_COVID_IMAGES_PROCESSED_PATH)
 	images = load_all_images(test_set)
 	print('Pre-processing all images..')
-	images_processed = pre_process_images(images)
+	images_processed = pre_process_images(images, pre_processing_technique)
 	print("{} images processed".format(len(images_processed)))
 	print('Saving images..')
-	save_images_as_csv(images_processed, n_true_values, path=params.PRE_PROCESSED_FOLDER_PATH, filename=params.TEST_DATASET)
+	save_images_as_csv(images_processed, n_true_values, path=folder, filename=params.TEST_DATASET)
+
+def save_metrics(addressSize, train_score, validation_score, test_score, filename):
+
+	train_score_mean = np.mean(train_score, axis=0)
+	validation_score_mean = np.mean(validation_score, axis=0)
+	test_score_mean = np.mean(test_score, axis=0)
+
+	train_score_std = np.std(train_score)
+	validation_score_std = np.std(validation_score)
+	test_score_std = np.std(test_score)
+
+	matrix = {}
+	matrix['addressSize'] = [addressSize]
+	matrix['train_mean'] = [train_score_mean]
+	matrix['validation_mean'] = [validation_score_mean]
+	matrix['test_mean'] = [test_score_mean]
+	matrix['train_std'] = [train_score_std]
+	matrix['validation_std'] = [validation_score_std]
+	matrix['test__std'] = [test_score_std]
+
+	result = pd.DataFrame(matrix)
+	with open(filename, 'a') as file:
+		result.to_csv(file, index=False, header=True)
+
 
 def visualize_filters_opencv_filters(image_path):
 	img = cv2.imread(image_path)
