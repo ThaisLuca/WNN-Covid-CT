@@ -5,8 +5,8 @@ import numpy as np
 import sys, os
 import cv2
 
-import skimage.io
-from skimage.filters import threshold_otsu, threshold_niblack, threshold_sauvola
+#import skimage.io
+#from skimage.filters import threshold_otsu, threshold_niblack, threshold_sauvola
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -76,7 +76,6 @@ def pre_process_images(images, pre_processing_technique):
 	n_images = len(images)
 	for image in images:
 		image = cv2.cvtColor(cv2.resize(image, params.DIM, interpolation=cv2.INTER_NEAREST), cv2.COLOR_BGR2GRAY)
-
 		if(pre_processing_technique == params.OTSU_THRESHOLD):
 			ret, thresh1 = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 		else:
