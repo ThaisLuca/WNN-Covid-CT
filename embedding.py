@@ -13,6 +13,7 @@ from keras.models import Sequential,Model
 
 from os import path
 import sys, os
+import cv2
 
 def get_train_test_images():
 	#Load images
@@ -78,14 +79,13 @@ def use_inceptionV3(train, test):
 
 def main():
 
-	path = utils.get_files_path(file=params.COVID_TRAINING_DATASET, path=params.COVID_IMAGES_PROCESSED_PATH)[0]
-	utils.visualize_filters_opencv_filters(path)
-	return
-
-	train_data, train_target, test_data, test_target = get_train_test_images()
+	#path = utils.get_files_path(file=params.COVID_TRAINING_DATASET, path=params.COVID_IMAGES_PROCESSED_PATH)[0]
+	foto = "impact_of_covid19_infection_on_pregnancy_outcomes_and_the_risk_of_maternaltoneonatal_intrapartum_transmission_of_covid19_during_natural_birth-p8-41%1.png"
+	utils.visualize_filters_opencv_filters(os.getcwd() + params.COVID_IMAGES_PROCESSED_PATH + foto)
+	#train_data, train_target, test_data, test_target = get_train_test_images()
 
 	# Using InceptionV3
-	train_data_features, test_data_features = use_inceptionV3(train_data, test_data)
+	#train_data_features, test_data_features = use_inceptionV3(train_data, test_data)
 
 
 if __name__ == "__main__":
