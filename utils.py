@@ -87,7 +87,7 @@ def apply_threshold(df):
 	columns = df.columns
 	for column in columns:
 		if(column == 'target'): continue
-		df[column] = np.where(df[column] == 255, '1', '0')
+		df[column] = np.where(df[column] > 0, '1', '0')
 	return df
 
 def create_row(array, label, keys):
@@ -202,17 +202,17 @@ def visualize_filters_opencv_filters(image_path):
 	plt.axis('off')
 
 	plt.subplot(2,2,2)
-	plt.title('Otsu Threshold')
+	plt.title('Otsu Thresholding')
 	plt.imshow(thresh1, cmap=plt.cm.gray)
 	plt.axis('off')
 
 	plt.subplot(2,2,3)
-	plt.title('Canny Edge Detector 100x200')
+	plt.title('Canny Edge - 100x200')
 	plt.imshow(edges_1, cmap=plt.cm.gray)
 	plt.axis('off')
 
 	plt.subplot(2,2,4)
-	plt.title('Canny Edge Detector 300x200')
+	plt.title('Canny Edge - 300x200')
 	plt.imshow(edges_2, cmap=plt.cm.gray)
 	plt.axis('off')
 
@@ -220,4 +220,39 @@ def visualize_filters_opencv_filters(image_path):
 
 	return
 
-#visualize_filters_opencv_filters('resources/foto.png')
+def embeddings_binarization():
+	# VGG-16 feature vectors
+	vgg_16_train_features = pd.read_csv(params.VGG_16_TRAIN_FEATURES_FILE)
+	vgg_16_test_features = pd.read_csv(params.VGG_16_TEST_FEATURES_FILE)
+
+	vgg_16_train_features = apply_threshold(vgg_16_train_features)
+	vgg_16_test_features = apply_threshold(vgg_16_test_features)
+
+	vgg_16_train_features.to_csv(params.VGG_16_TRAINING)
+	vgg_16_test_features.to_csv(params.VGG_16_TEST)
+
+	del vgg_16_train_features, vgg_16_test_features
+
+	# VGG-19 feature vectors
+	vgg_19_train_features = pd.read_csv(params.VGG_19_TRAIN_FEATURES_FILE)
+	vgg_19_test_features = pd.read_csv(params.VGG_19_TEST_FEATURES_FILE)
+
+	vgg_19_train_features = apply_threshold(vgg_19_train_features)
+	vgg_19_test_features = apply_threshold(vgg_19_test_features)
+
+	vgg_19_train_features.to_csv(params.VGG_19_TRAINING)
+	vgg_19_test_features.to_csv(params.VGG_19_TEST)
+
+	del vgg_19_train_features, vgg_19_test_features
+
+	# Inception V3 feature vectors
+	inception_v3_train_features = pd.read_csv(params.INCEPTION_V3_TRAIN_FEATURES_FILE)
+	inception_v3_test_features = pd.read_csv(params.INCEPTION_V3_TEST_FEATURES_FILE)
+
+	inception_v3_train_features = apply_threshold(inception_v3_train_features)
+	inception_v3_test_features = apply_threshold(inception_v3_test_features)
+
+	inception_v3_train_features.to_csv(params.INCEPTION_V3_TRAINING)
+	inception_v3_test_features.to_csv(params.INCEPTION_V3_TEST)
+
+	del inception_v3_train_features, inception_v3_test_features

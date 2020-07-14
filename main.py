@@ -78,9 +78,6 @@ def network(X, y, X_test, y_test, addressSize):
 		fold += 1
 		print('\n')
 
-	if(not path.exists(os.getcwd() + params.RESULTS_FOLDER_PATH)):
-		os.mkdir(os.getcwd() + params.RESULTS_FOLDER_PATH)
-
 	utils.save_metrics(addressSize, train_accuracy_score, validation_accuracy_score, test_accuracy_score, filename='accuracy.csv')
 	utils.save_metrics(addressSize, train_f1_score, validation_f1_score, test_f1_score, filename='f1.csv')
 	utils.save_metrics(addressSize, train_auc_score, validation_auc_score, test_auc_score, filename='auc.csv')
@@ -103,14 +100,35 @@ def main():
 			# Pre-Process images and save for later
 			os.makedirs(os.getcwd() + params.PRE_PROCESSED_CANNY_FOLDER_PATH)
 			utils.create_csv_files(pre_processing_technique=params.CANNY_DETECTOR)
-	else:
-		print("Error. Please choose {} or {} as pre-processing technique.".format(params.OTSU_THRESHOLD, params.CANNY_DETECTOR))
-		return
 
 		#Load images in CSV file
 		train_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_CANNY_FOLDER_PATH + params.TRAIN_DATASET, dtype=int)).sample(frac=1)
 		val_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_CANNY_FOLDER_PATH + params.VALIDATION_DATASET, dtype=int)).sample(frac=1)
 		test_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_CANNY_FOLDER_PATH + params.TEST_DATASET, dtype=int)).sample(frac=1)
+
+	elif(str(sys.argv[1]).lower() == params.EMBEDDING_VGG16):
+
+		# VGG-16
+		train_set = (pd.read_csv(os.getcwd() + params.VGG_16_TRAINING, dtype=int)).sample(frac=1)
+		test_set = (pd.read_csv(os.getcwd()  + params.VGG_16_TEST, dtype=int)).sample(frac=1)
+
+	elif(str(sys.argv[1]).lower() == params.EMBEDDING_VGG19):
+
+		# VGG-19
+		train_set = (pd.read_csv(os.getcwd() + params.VGG_19_TRAINING, dtype=int)).sample(frac=1)
+		test_set = (pd.read_csv(os.getcwd()  + params.VGG_16_TEST, dtype=int)).sample(frac=1)
+
+	elif(str(sys.argv[1]).lower() == params.EMBEDDING_INCEPTION):
+
+		# Inception V3
+		train_set = (pd.read_csv(os.getcwd() + params.INCEPTION_V3_TRAINING, dtype=int)).sample(frac=1)
+		test_set = (pd.read_csv(os.getcwd()  + params.INCEPTION_V3_TEST, dtype=int)).sample(frac=1)
+
+	else:
+		print("Error. Please choose {} or {} for pre-processing Otsu Thresholding and Canny Edge Detector techniques.".format(params.OTSU_THRESHOLD, params.CANNY_DETECTOR, params.EMBEDDING))
+		print("Use {}, {} or {} for VGG-16, VGG-19 or Inception V3 embeddings.".format(params.EMBEDDING_VGG16, params.EMBEDDING_VGG19, params.EMBEDDING_INCEPTION))
+		return
+
 
 	train_set = pd.concat([train_set, val_set])
 
