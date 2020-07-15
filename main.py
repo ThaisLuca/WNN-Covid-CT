@@ -132,7 +132,7 @@ def main():
 		test_set = (pd.read_csv(os.getcwd()  + '/' + params.INCEPTION_V3_TEST, dtype=int)).sample(frac=1)
 
 	else:
-		print("Error. Please choose {} or {} for pre-processing Otsu Thresholding and Canny Edge Detector techniques.".format(params.OTSU_THRESHOLD, params.CANNY_DETECTOR, params.EMBEDDING))
+		print("Error. Please choose {} or {} for pre-processing Otsu Thresholding and Canny Edge Detector techniques.".format(params.OTSU_THRESHOLD, params.CANNY_DETECTOR))
 		print("Use {}, {} or {} for VGG-16, VGG-19 or Inception V3 embeddings.".format(params.EMBEDDING_VGG16, params.EMBEDDING_VGG19, params.EMBEDDING_INCEPTION))
 		return
 

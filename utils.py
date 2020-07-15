@@ -222,8 +222,8 @@ def visualize_filters_opencv_filters(image_path):
 
 	return
 
-def array_to_dataframe(images, targets):
-	columns = [i for i in range(len(images))]
+def array_to_dataframe(images, targets, n_columns):
+	columns = [i for i in range(n_columns)]
 	columns.append('target')
 	print("{} columns created.".format(len(columns)))
 	n_images = len(images)
@@ -248,17 +248,21 @@ def embeddings_binarization():
 
 	print(vgg_16_train_features.shape, vgg_16_test_features.shape)
 
-	vgg_16_train_target = vgg_16_train_features['target'].values.tolist()
-	vgg_16_train_features = pca.fit_transform(vgg_16_train_features.drop('target', axis=1))
+	vgg_16_all_features = pd.concat([vgg_16_train_features, vgg_16_test_features])
 
+	vgg_16_train_target = vgg_16_train_features['target'].values.tolist()
 	vgg_16_test_target = vgg_16_test_features['target'].values.tolist()
-	vgg_16_test_features = pca.fit_transform(vgg_16_test_features.drop('target', axis=1))
+
+	vgg_16_all_features = pca.fit_transform(vgg_16_all_features.drop('target', axis=1))
+
+	vgg_16_train_features = vgg_16_all_features[:-len(vgg_16_test_features), :]
+	vgg_16_test_features = vgg_16_all_features[len(vgg_16_train_features):, :]
+
+	vgg_16_train_features = array_to_dataframe(vgg_16_train_features, vgg_16_train_target, len(vgg_16_train_features[0]))
+	vgg_16_test_features = array_to_dataframe(vgg_16_test_features, vgg_16_test_target, len(vgg_16_test_features[0]))
 
 	print(vgg_16_train_features.shape, vgg_16_test_features.shape)
 	print("\n")
-
-	vgg_16_train_features = array_to_dataframe(vgg_16_train_features, vgg_16_train_target)
-	vgg_16_test_features = array_to_dataframe(vgg_16_test_features, vgg_16_test_target)
 
 	vgg_16_train_features = apply_threshold(vgg_16_train_features)
 	vgg_16_test_features = apply_threshold(vgg_16_test_features)
@@ -266,7 +270,7 @@ def embeddings_binarization():
 	vgg_16_train_features.to_csv(params.VGG_16_TRAINING, index=False)
 	vgg_16_test_features.to_csv(params.VGG_16_TEST, index=False)
 
-	del vgg_16_train_features, vgg_16_test_features
+	del vgg_16_train_features, vgg_16_test_features, vgg_16_all_features
 
 	# VGG-19 feature vectors
 	vgg_19_train_features = (pd.read_csv(params.VGG_19_TRAIN_FEATURES_FILE)).fillna(0)
@@ -274,17 +278,21 @@ def embeddings_binarization():
 
 	print(vgg_19_train_features.shape, vgg_19_test_features.shape)
 
-	vgg_19_train_target = vgg_19_train_features['target'].values.tolist()
-	vgg_19_train_features = pca.fit_transform(vgg_19_train_features.drop('target', axis=1))
+	vgg_19_all_features = pd.concat([vgg_19_train_features, vgg_19_test_features])
 
+	vgg_19_train_target = vgg_19_train_features['target'].values.tolist()
 	vgg_19_test_target = vgg_19_test_features['target'].values.tolist()
-	vgg_19_test_features = pca.fit_transform(vgg_19_test_features.drop('target', axis=1))
+
+	vgg_19_all_features = pca.fit_transform(vgg_19_all_features.drop('target', axis=1))
+
+	vgg_19_train_features = vgg_19_all_features[:-len(vgg_19_test_features), :]
+	vgg_19_test_features = vgg_19_all_features[len(vgg_19_train_features):, :]
+
+	vgg_19_train_features = array_to_dataframe(vgg_19_train_features, vgg_19_train_target, len(vgg_19_train_features[0]))
+	vgg_19_test_features = array_to_dataframe(vgg_19_test_features, vgg_19_test_target, len(vgg_19_test_features[0]))
 
 	print(vgg_19_train_features.shape, vgg_19_test_features.shape)
 	print("\n")
-
-	vgg_19_train_features = array_to_dataframe(vgg_19_train_features, vgg_19_train_target)
-	vgg_19_test_features = array_to_dataframe(vgg_19_test_features, vgg_19_test_target)
 
 	vgg_19_train_features = apply_threshold(vgg_19_train_features)
 	vgg_19_test_features = apply_threshold(vgg_19_test_features)
@@ -292,7 +300,7 @@ def embeddings_binarization():
 	vgg_19_train_features.to_csv(params.VGG_19_TRAINING, index=False)
 	vgg_19_test_features.to_csv(params.VGG_19_TEST, index=False)
 
-	del vgg_19_train_features, vgg_19_test_features
+	del vgg_19_train_features, vgg_19_test_features, vgg_19_all_features
 
 	# Inception V3 feature vectors
 	inception_v3_train_features = (pd.read_csv(params.INCEPTION_V3_TRAIN_FEATURES_FILE)).fillna(0)
@@ -300,17 +308,21 @@ def embeddings_binarization():
 
 	print(inception_v3_train_features.shape, inception_v3_test_features.shape)
 
-	inception_v3_train_target = inception_v3_train_features['target'].values.tolist()
-	inception_v3_train_features = pca.fit_transform(inception_v3_train_features.drop('target', axis=1))
+	inception_v3_all_features = pd.concat([inception_v3_train_features, inception_v3_test_features])
 
+	inception_v3_train_target = inception_v3_train_features['target'].values.tolist()
 	inception_v3_test_target = inception_v3_test_features['target'].values.tolist()
-	inception_v3_test_features = pca.fit_transform(inception_v3_test_features.drop('target', axis=1))
+
+	inception_v3_all_features = pca.fit_transform(inception_v3_all_features.drop('target', axis=1))
+
+	inception_v3_train_features = inception_v3_all_features[:-len(inception_v3_test_features), :]
+	inception_v3_test_features = inception_v3_all_features[len(inception_v3_train_features):, :]
+
+	inception_v3_train_features = array_to_dataframe(inception_v3_train_features, inception_v3_train_target, len(inception_v3_train_features[0]))
+	inception_v3_test_features = array_to_dataframe(inception_v3_test_features, inception_v3_test_target, len(inception_v3_test_features[0]))
 
 	print(inception_v3_train_features.shape, inception_v3_test_features.shape)
 	print("\n")
-
-	inception_v3_train_features = array_to_dataframe(inception_v3_train_features, inception_v3_train_target)
-	inception_v3_test_features = array_to_dataframe(inception_v3_test_features, inception_v3_test_target)
 
 	inception_v3_train_features = apply_threshold(inception_v3_train_features)
 	inception_v3_test_features = apply_threshold(inception_v3_test_features)
@@ -318,4 +330,6 @@ def embeddings_binarization():
 	inception_v3_train_features.to_csv(params.INCEPTION_V3_TRAINING, index=False)
 	inception_v3_test_features.to_csv(params.INCEPTION_V3_TEST, index=False)
 
-	del inception_v3_train_features, inception_v3_test_features
+	del inception_v3_train_features, inception_v3_test_features, inception_v3_all_features
+
+embeddings_binarization()
