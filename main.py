@@ -95,6 +95,9 @@ def main():
 		val_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_OTSU_FOLDER_PATH + params.VALIDATION_DATASET, dtype=int)).sample(frac=1)
 		test_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_OTSU_FOLDER_PATH + params.TEST_DATASET, dtype=int)).sample(frac=1)
 
+		train_set = pd.concat([train_set, val_set])
+		del val_set
+
 	elif(str(sys.argv[1]).lower() == params.CANNY_DETECTOR):
 		if(not path.exists(os.getcwd() + params.PRE_PROCESSED_CANNY_FOLDER_PATH)):
 			# Pre-Process images and save for later
@@ -106,31 +109,32 @@ def main():
 		val_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_CANNY_FOLDER_PATH + params.VALIDATION_DATASET, dtype=int)).sample(frac=1)
 		test_set = (pd.read_csv(os.getcwd() + params.PRE_PROCESSED_CANNY_FOLDER_PATH + params.TEST_DATASET, dtype=int)).sample(frac=1)
 
+		train_set = pd.concat([train_set, val_set])
+		del val_set
+
+
 	elif(str(sys.argv[1]).lower() == params.EMBEDDING_VGG16):
 
 		# VGG-16
-		train_set = (pd.read_csv(os.getcwd() + params.VGG_16_TRAINING, dtype=int)).sample(frac=1)
-		test_set = (pd.read_csv(os.getcwd()  + params.VGG_16_TEST, dtype=int)).sample(frac=1)
+		train_set = (pd.read_csv(os.getcwd() + '/' + params.VGG_16_TRAINING, dtype=int)).sample(frac=1)
+		test_set = (pd.read_csv(os.getcwd()  + '/' + params.VGG_16_TEST, dtype=int)).sample(frac=1)
 
 	elif(str(sys.argv[1]).lower() == params.EMBEDDING_VGG19):
 
 		# VGG-19
-		train_set = (pd.read_csv(os.getcwd() + params.VGG_19_TRAINING, dtype=int)).sample(frac=1)
-		test_set = (pd.read_csv(os.getcwd()  + params.VGG_16_TEST, dtype=int)).sample(frac=1)
+		train_set = (pd.read_csv(os.getcwd() + '/' + params.VGG_19_TRAINING, dtype=int)).sample(frac=1)
+		test_set = (pd.read_csv(os.getcwd()  + '/' + params.VGG_19_TEST, dtype=int)).sample(frac=1)
 
 	elif(str(sys.argv[1]).lower() == params.EMBEDDING_INCEPTION):
 
 		# Inception V3
-		train_set = (pd.read_csv(os.getcwd() + params.INCEPTION_V3_TRAINING, dtype=int)).sample(frac=1)
-		test_set = (pd.read_csv(os.getcwd()  + params.INCEPTION_V3_TEST, dtype=int)).sample(frac=1)
+		train_set = (pd.read_csv(os.getcwd() + '/' + params.INCEPTION_V3_TRAINING, dtype=int)).sample(frac=1)
+		test_set = (pd.read_csv(os.getcwd()  + '/' + params.INCEPTION_V3_TEST, dtype=int)).sample(frac=1)
 
 	else:
 		print("Error. Please choose {} or {} for pre-processing Otsu Thresholding and Canny Edge Detector techniques.".format(params.OTSU_THRESHOLD, params.CANNY_DETECTOR, params.EMBEDDING))
 		print("Use {}, {} or {} for VGG-16, VGG-19 or Inception V3 embeddings.".format(params.EMBEDDING_VGG16, params.EMBEDDING_VGG19, params.EMBEDDING_INCEPTION))
 		return
-
-
-	train_set = pd.concat([train_set, val_set])
 
 	X = train_set.drop(['target'], axis=1).values.tolist()
 	X_test = test_set.drop(['target'], axis=1).values.tolist()
@@ -138,7 +142,7 @@ def main():
 	y = train_set['target'].values.tolist()
 	y_test = test_set['target'].values.tolist()
 	y, y_test = [str(i) for i in y], [str(y_t) for y_t in y_test]
-	del train_set, val_set, test_set
+	del train_set, test_set
 
 	addressSizes = [20, 25, 30, 35, 40, 45, 50, 55, 60, 64]
 

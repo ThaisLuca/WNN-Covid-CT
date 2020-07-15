@@ -8,6 +8,8 @@ import cv2
 #import skimage.io
 #from skimage.filters import threshold_otsu, threshold_niblack, threshold_sauvola
 
+from sklearn.decomposition import PCA
+
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -220,39 +222,106 @@ def visualize_filters_opencv_filters(image_path):
 
 	return
 
+def array_to_dataframe(images, targets):
+	columns = [i for i in range(len(images))]
+	columns.append('target')
+	print("{} columns created.".format(len(columns)))
+	n_images = len(images)
+
+	data = pd.DataFrame([], columns=columns)
+	for image,target in zip(images, targets):
+		row = create_row(image, target, columns)
+		data = data.append(row, ignore_index=True)
+		print("{}\{} saved to CSV file".format(data.shape[0], n_images))
+
+	return data
+
+
 def embeddings_binarization():
+
+	# Using PCA to reduce dimensionality
+	pca = PCA()
+
 	# VGG-16 feature vectors
-	vgg_16_train_features = pd.read_csv(params.VGG_16_TRAIN_FEATURES_FILE)
-	vgg_16_test_features = pd.read_csv(params.VGG_16_TEST_FEATURES_FILE)
+	#vgg_16_train_features = (pd.read_csv(params.VGG_16_TRAIN_FEATURES_FILE)).fillna(0)
+	#vgg_16_test_features = (pd.read_csv(params.VGG_16_TEST_FEATURES_FILE)).fillna(0)
 
-	vgg_16_train_features = apply_threshold(vgg_16_train_features)
-	vgg_16_test_features = apply_threshold(vgg_16_test_features)
+	#print(vgg_16_train_features.shape, vgg_16_test_features.shape)
 
-	vgg_16_train_features.to_csv(params.VGG_16_TRAINING)
-	vgg_16_test_features.to_csv(params.VGG_16_TEST)
+	#vgg_16_train_target = vgg_16_train_features['target'].values.tolist()
+	#vgg_16_train_features = pca.fit_transform(vgg_16_train_features.drop('target', axis=1))
 
-	del vgg_16_train_features, vgg_16_test_features
+	#vgg_16_test_target = vgg_16_test_features['target'].values.tolist()
+	#vgg_16_test_features = pca.fit_transform(vgg_16_test_features.drop('target', axis=1))
+
+	#print(vgg_16_train_features.shape, vgg_16_test_features.shape)
+	#print("\n")
+
+	#vgg_16_train_features = array_to_dataframe(vgg_16_train_features, vgg_16_train_target)
+	#vgg_16_test_features = array_to_dataframe(vgg_16_test_features, vgg_16_test_target)
+
+	#vgg_16_train_features = apply_threshold(vgg_16_train_features)
+	#vgg_16_test_features = apply_threshold(vgg_16_test_features)
+
+	#vgg_16_train_features.to_csv(params.VGG_16_TRAINING, index=False)
+	#vgg_16_test_features.to_csv(params.VGG_16_TEST, index=False)
+
+	#del vgg_16_train_features, vgg_16_test_features
 
 	# VGG-19 feature vectors
-	vgg_19_train_features = pd.read_csv(params.VGG_19_TRAIN_FEATURES_FILE)
-	vgg_19_test_features = pd.read_csv(params.VGG_19_TEST_FEATURES_FILE)
+	#vgg_19_train_features = (pd.read_csv(params.VGG_19_TRAIN_FEATURES_FILE)).fillna(0)
+	#vgg_19_test_features = (pd.read_csv(params.VGG_19_TEST_FEATURES_FILE)).fillna(0)
 
-	vgg_19_train_features = apply_threshold(vgg_19_train_features)
-	vgg_19_test_features = apply_threshold(vgg_19_test_features)
+	#print(vgg_19_train_features.shape, vgg_19_test_features.shape)
 
-	vgg_19_train_features.to_csv(params.VGG_19_TRAINING)
-	vgg_19_test_features.to_csv(params.VGG_19_TEST)
+	#vgg_19_train_target = vgg_19_train_features['target'].values.tolist()
+	#vgg_19_train_features = pca.fit_transform(vgg_19_train_features.drop('target', axis=1))
 
-	del vgg_19_train_features, vgg_19_test_features
+	#vgg_19_test_target = vgg_19_test_features['target'].values.tolist()
+	#vgg_19_test_features = pca.fit_transform(vgg_19_test_features.drop('target', axis=1))
+
+	#print(vgg_19_train_features.shape, vgg_19_test_features.shape)
+	#print("\n")
+
+	#vgg_19_train_features = array_to_dataframe(vgg_19_train_features, vgg_19_train_target)
+	#vgg_19_test_features = array_to_dataframe(vgg_19_test_features, vgg_19_test_target)
+
+	#vgg_19_train_features = apply_threshold(vgg_19_train_features)
+	#vgg_19_test_features = apply_threshold(vgg_19_test_features)
+
+	#vgg_19_train_features.to_csv(params.VGG_19_TRAINING, index=False)
+	#vgg_19_test_features.to_csv(params.VGG_19_TEST, index=False)
+
+	#del vgg_19_train_features, vgg_19_test_features
 
 	# Inception V3 feature vectors
-	inception_v3_train_features = pd.read_csv(params.INCEPTION_V3_TRAIN_FEATURES_FILE)
-	inception_v3_test_features = pd.read_csv(params.INCEPTION_V3_TEST_FEATURES_FILE)
+	inception_v3_train_features = (pd.read_csv(params.INCEPTION_V3_TRAIN_FEATURES_FILE)).fillna(0)
+	inception_v3_test_features = (pd.read_csv(params.INCEPTION_V3_TEST_FEATURES_FILE)).fillna(0)
+
+	print(inception_v3_train_features.columns)
+	print(inception_v3_test_features.columns)
+	return
+
+	print(inception_v3_train_features.shape, inception_v3_test_features.shape)
+
+	inception_v3_train_target = inception_v3_train_features['target'].values.tolist()
+	inception_v3_train_features = pca.fit_transform(inception_v3_train_features.drop('target'), axis=1)
+
+	inception_v3_test_target = inception_v3_test_features['target'].values.tolist()
+	inception_v3_test_features = pca.fit_transform(inception_v3_test_features.drop('target', axis=1))
+
+	print(inception_v3_train_features.shape, inception_v3_test_features.shape)
+	print("\n")
 
 	inception_v3_train_features = apply_threshold(inception_v3_train_features)
 	inception_v3_test_features = apply_threshold(inception_v3_test_features)
 
-	inception_v3_train_features.to_csv(params.INCEPTION_V3_TRAINING)
-	inception_v3_test_features.to_csv(params.INCEPTION_V3_TEST)
+	inception_v3_train_features = array_to_dataframe(inception_v3_train_features, inception_v3_train_target)
+	inception_v3_test_features = array_to_dataframe(inception_v3_test_features, inception_v3_test_target)
+
+	inception_v3_train_features.to_csv(params.INCEPTION_V3_TRAINING, index=False)
+	inception_v3_test_features.to_csv(params.INCEPTION_V3_TEST, index=False)
 
 	del inception_v3_train_features, inception_v3_test_features
+
+embeddings_binarization()
