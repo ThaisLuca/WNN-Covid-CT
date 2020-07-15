@@ -61,18 +61,6 @@ def load_all_images(images_path):
 		images.append(cv2.imread(path))
 	return images
 
-def apply_median_blur(images):
-	blury_images = []
-	for image in images:
-		blury_images.append(cv2.medianBlur(image, 5))
-	return blury_images
-
-def apply_gaussian_blur(images):
-	blury_images = []
-	for image in images:
-		blury_images.append(cv2.GaussianBlur(image, (5,5), 0))
-	return blury_images
-
 def pre_process_images(images, pre_processing_technique):
 	pp_images = []
 	n_images = len(images)
@@ -331,5 +319,3 @@ def embeddings_binarization():
 	inception_v3_test_features.to_csv(params.INCEPTION_V3_TEST, index=False)
 
 	del inception_v3_train_features, inception_v3_test_features, inception_v3_all_features
-
-embeddings_binarization()
